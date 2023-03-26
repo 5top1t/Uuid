@@ -4,22 +4,30 @@ from lib import (node, specification, timestamp)
 
 import json
 
+def get_uuid_components(urn: UUID, name=""):
+    timestamp_dict = timestamp.get_datetime_dict(urn)
+    spec_dict = specification.get_specification_dict(urn)
+    node_dict = node.get_node_dict(spec_dict.get('version'), name)
 
-namespace = 'Hack.Diversity.com'
-urn = UUID('787bce4a-6865-11ec-a24f-38f9d34e0805')
-urn = uuid3(namespace, "hello")
+    uuid_components_dict = {
+        "uuid": urn.urn,
+        "node": node_dict,
+        "spec": spec_dict,
+        "datetime": timestamp_dict,
 
-timestamp_dict = timestamp.get_datetime_dict(urn)
-spec_dict = specification.get_specification_dict(urn)
-node_dict = node.get_node_dict(spec_dict.get('version'), namespace)
+    }
+    
+    return uuid_components_dict
+    
+        
 
-structure_dict = {
-    "uuid": urn.urn,
-    "node": node_dict,
-    "spec": spec_dict,
-    "datetime": timestamp_dict,
+name = "demo"
+hack_diversity_namespace = uuid1()
+urn_1 = hack_diversity_namespace
+urn_3 = uuid3(hack_diversity_namespace, name)
+urn_4 = uuid4()
+urn_5 = uuid5(hack_diversity_namespace, name)
 
-}
-structure_json = json.dumps(structure_dict, indent=4)
-
-print(structure_json)
+urn = urn_1
+uuid_components_json = json.dumps(get_uuid_components(urn, name), indent=4)
+print(uuid_components_json)
