@@ -1,5 +1,6 @@
 import hashlib
 import uuid
+from uuid import UUID
 
 def _get_mac_address_node():
     # UUID version 1, the node field consists of an IEEE 802 MAC
@@ -35,6 +36,11 @@ def _get_sha1_node(namespace):
     return hash_hex
 
 
+def _get_mac_address(urn: UUID):
+    mac_address = urn.node.to_bytes(6, byteorder='big')
+    return mac_address.hex(':')
+
+
 def _get_node_version(version: int, namespace: str = ""):
     if (version == 1):
         return _get_mac_address_node()
@@ -43,10 +49,13 @@ def _get_node_version(version: int, namespace: str = ""):
     elif (version == 5):
         return _get_sha1_node(namespace)
     else:
-       raise ValueError("Version {} is not supported".format(version))
+       return None
 
 
-def get_node_dict(version: int, namespace: str):
+def get_node_dict(urn: UUID, version: int, namespace: str):
     return {
-        "namespace": _get_node_version(version, namespace)
+        "namespace": _get_node_version(version, namespace),
+        "mac_address": _get_mac_address(urn)
     }
+    
+
